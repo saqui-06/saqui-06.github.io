@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Control Novedades - Gestión Institucional</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- Estilos Personalizados (Panel Superior Horizontal) -->
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="bg-light">
+
+    <!-- Toast de Notificaciones -->
+    <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 2050;">
+        <div id="toastNotificacion" class="toast align-items-center text-white bg-success border-0 shadow-lg" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body d-flex align-items-center gap-2">
+                    <i id="toastIcono" class="bi bi-check-circle-fill fs-4"></i>
+                    <div id="toastMensaje">Notificación del sistema</div>
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Cerrar"></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- 1. PANTALLA INICIAL DE AUTENTICACIÓN (LOGIN)-->
+    <!-- ========================================== -->
+    <div id="vista-login" class="container-fluid min-vh-100 d-flex align-items-center justify-content-center py-5 bg-gradient-login">
+        <div class="card card-login shadow-lg border-0" style="max-width: 440px; width: 100%;">
+            <div class="card-body p-4 p-md-5">
+                <div class="text-center mb-4">
+                    <div class="d-inline-flex align-items-center justify-content-center bg-primary text-white rounded-circle mb-3 shadow" style="width: 72px; height: 72px;">
+                        <i class="bi bi-shield-lock-fill fs-1"></i>
+                    </div>
+                    <h3 class="fw-bold text-dark mb-1">Control Novedades</h3>
+                    <p class="text-muted small">Ingresa tus credenciales para acceder</p>
+                </div>
+
+                <form id="form-login">
+                    <div class="mb-3">
+                        <label for="login-usuario" class="form-label fw-semibold">Usuario o Correo Institucional</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light"><i class="bi bi-person-fill"></i></span>
+                            <input type="text" class="form-control" id="login-usuario" required placeholder="Ingresa tu usuario o correo" autocomplete="username">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="login-password" class="form-label fw-semibold">Contraseña</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light"><i class="bi bi-key-fill"></i></span>
+                            <input type="password" class="form-control" id="login-password" required placeholder="••••••••" autocomplete="current-password">
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <a href="#" class="small text-decoration-none text-primary fw-semibold" onclick="AuthController.abrirModalRecuperarLogin(event)">
+                            ¿Olvidaste tu contraseña?
+                        </a>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100 py-2 fw-semibold shadow-sm">
+                        <i class="bi bi-box-arrow-in-right me-1"></i> Iniciar Sesión
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- 2. VISTA PRINCIPAL (DASHBOARD SPA)         -->
+    <!-- ========================================== -->
+    <div id="vista-app" class="d-none">
+
+        <!-- ========================================== -->
+        <!-- TOP NAVBAR: PANEL HORIZONTAL SUPERIOR      -->
+        <!-- ========================================== -->
+        <nav class="navbar navbar-expand-lg navbar-dark navbar-top-panel sticky-top">
+            <div class="container-fluid px-lg-4">
+
+                <!-- [IZQUIERDA] Título del Sistema con Icono Identificativo -->
+                <a class="d-flex align-items-center gap-2 brand-container me-3" href="#">
+                    <div class="brand-icon-box">
+                        <i class="bi bi-journal-check"></i>
+                    </div>
+                    <div>
+                        <span class="brand-text d-block">Control Novedades</span>
+                    </div>
+                </a>
+
+                <!-- Botón Toggle para pantallas móviles -->
+                <button class="navbar-toggler border-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSuperiorMain" aria-controls="navbarSuperiorMain" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Contenido colapsable horizontal -->
+                <div class="collapse navbar-collapse" id="navbarSuperiorMain">
+
+                    <!-- [CENTRO] Botones de Navegación Horizontal Limpia en fila -->
+                    <div class="mx-auto my-2 my-lg-0">
+                        <div class="nav-modules-group d-flex flex-row align-items-center justify-content-center">
+                            <!-- Novedades -->
+                            <button class="nav-module-btn nav-section-btn active" data-target="seccion-novedades">
+                                <i class="bi bi-exclamation-triangle-fill text-warning"></i>
+                                <span>Novedades</span>
+                            </button>
+
+                            <!-- Equipos -->
+                            <button class="nav-module-btn nav-section-btn" data-target="seccion-equipos">
+                                <i class="bi bi-pc-display-horizontal text-success"></i>
+                                <span>Equipos</span>
+                            </button>
+
+                            <!-- Departamentos (Solo Administrador) -->
+                            <button class="nav-module-btn nav-section-btn admin-only" data-target="seccion-departamentos">
+                                <i class="bi bi-buildings-fill text-info"></i>
+                                <span>Departamentos</span>
+                            </button>
+
+                            <!-- Usuarios (Solo Administrador) -->
+                            <button class="nav-module-btn nav-section-btn admin-only" data-target="seccion-usuarios">
+                                <i class="bi bi-people-fill text-primary"></i>
+                                <span>Usuarios</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- [DERECHA] Botón Exportar a Excel + Menú de Usuario -->
+                    <div class="d-flex align-items-center gap-2 flex-wrap justify-content-end mt-2 mt-lg-0">
+                        <!-- Botón Exportar Reporte a Excel (SOLO Administrador) -->
+                        <button class="btn btn-success btn-export-excel admin-only" onclick="exportarReporteExcel()" title="Descargar reporte en formato .xlsx">
+                            <i class="bi bi-file-earmark-excel-fill fs-5"></i>
+                            <span>Exportar Reporte a Excel</span>
+                        </button>
+
+                        <!-- Menú de Usuario Activo con Identificación Clara -->
+                        <div class="dropdown">
+                            <button class="btn user-profile-badge dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="bi bi-person-circle fs-5 text-warning"></i>
+                                <span id="sesion-usuario-display" class="fw-semibold">Cargando...</span>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2">
+                                <li>
+                                    <h6 class="dropdown-header text-truncate" id="sesion-usuario-email" style="max-width: 230px;">correo@institucion.edu</h6>
+                                </li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <a class="dropdown-item d-flex align-items-center gap-2" href="#" onclick="AuthController.abrirModalCambiarPasswordPropia(event)">
+                                        <i class="bi bi-key text-warning"></i> Cambiar mi contraseña
+                                    </a>
+                                </li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <a class="dropdown-item d-flex align-items-center gap-2 text-danger" href="#" onclick="AuthController.cerrarSesion(event)">
+                                        <i class="bi bi-box-arrow-right"></i> Cerrar Sesión
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </nav>
+
+        <!-- Contenedor Principal de Módulos SPA -->
+        <main class="container-fluid px-lg-4 my-4">
+
+            <!-- ========================================== -->
+            <!-- MÓDULO 1: REGISTRO DE NOVEDADES           -->
+            <!-- (Administrador y Soporte)                  -->
+            <!-- ========================================== -->
+            <section id="seccion-novedades" class="modulo-seccion">
+                <div class="card card-custom shadow-sm mb-4">
+                    <div class="card-body">
+                        <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
+                            <div>
+                                <h3 class="fw-bold mb-1 text-dark">
+                                    <i class="bi bi-ticket-detailed text-warning me-2"></i>Control y Registro de Novedades
+                                </h3>
+                                <p class="text-muted mb-0 small">Apertura, resolución, seguimiento y asignación por departamento.</p>
+                            </div>
+                            <div class="d-flex align-items-center gap-2">
+                                <button class="btn btn-outline-danger fw-semibold admin-only" onclick="NovedadController.eliminarTodasLasNovedades()" title="Vaciar todos los registros de novedades">
+                                    <i class="bi bi-trash3-fill me-1"></i> Eliminar Todos los Registros
+                                </button>
+                                <button class="btn btn-warning text-dark fw-semibold" onclick="NovedadController.abrirModal()">
+                                    <i class="bi bi-plus-circle me-1"></i> Nueva Novedad
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="row g-2 mt-3 pt-3 border-top">
+                            <div class="col-md-4">
+                                <div class="input-group">
+                                    <span class="input-group-text bg-white"><i class="bi bi-search"></i></span>
+                                    <input type="text" id="filtro-novedades-texto" class="form-control" placeholder="Buscar por código, título, técnico o reportante...">
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <select id="filtro-novedades-depto" class="form-select">
+                                    <option value="">Todos los Departamentos</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <select id="filtro-novedades-estado" class="form-select">
+                                    <option value="">Todos los Estados</option>
+                                    <option value="Pendiente">Pendiente</option>
+                                    <option value="En revisión">En revisión</option>
+                                    <option value="Finalizado">Finalizado</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <button class="btn btn-outline-secondary w-100" onclick="limpiarFiltrosNovedades()">
+                                    <i class="bi bi-x-circle me-1"></i> Limpiar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card card-custom shadow-sm">
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0 text-nowrap">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>Código</th>
+                                        <th>Título y Detalle</th>
+                                        <th>Departamento</th>
+                                        <th>Reportante</th>
+                                        <th>Técnico Asignado</th>
+                                        <th>Fecha/Hora Apertura</th>
+                                        <th>Fecha/Hora Resolución</th>
+                                        <th style="min-width: 165px;">Estado</th>
+                                        <th class="text-center">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tabla-novedades-body"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ========================================== -->
+            <!-- MÓDULO 2: EQUIPOS CON PROBLEMAS            -->
+            <!-- (Administrador y Soporte)                  -->
+            <!-- ========================================== -->
+            <section id="seccion-equipos" class="modulo-seccion d-none">
+                <div class="card card-custom shadow-sm mb-4">
+                    <div class="card-body">
+                        <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
+                            <div>
+                                <h3 class="fw-bold mb-1 text-dark">
+                                    <i class="bi bi-pc-display text-success me-2"></i>Equipos con Problemas
+                                </h3>
+                                <p class="text-muted mb-0 small">Control de hardware defectuoso asignado a dependencias institucionales.</p>
+                            </div>
+                            <div class="d-flex align-items-center gap-2">
+                                <button class="btn btn-outline-danger fw-semibold admin-only" onclick="EquipoController.eliminarTodosLosEquipos()" title="Vaciar todos los registros de equipos">
+                                    <i class="bi bi-trash3-fill me-1"></i> Eliminar Todos los Registros
+                                </button>
+                                <button class="btn btn-success fw-semibold" onclick="EquipoController.abrirModal()">
+                                    <i class="bi bi-plus-circle me-1"></i> Registrar Equipo
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="row g-2 mt-3 pt-3 border-top">
+                            <div class="col-md-4">
+                                <div class="input-group">
+                                    <span class="input-group-text bg-white"><i class="bi bi-search"></i></span>
+                                    <input type="text" id="filtro-equipos-texto" class="form-control" placeholder="Buscar por Serie, Tipo, Marca o Falla...">
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <select id="filtro-equipos-depto" class="form-select">
+                                    <option value="">Todos los Departamentos</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <select id="filtro-equipos-estado" class="form-select">
+                                    <option value="">Todos los Estados</option>
+                                    <option value="En taller">En taller</option>
+                                    <option value="Reemplazado">Reemplazado</option>
+                                    <option value="Operativo">Operativo</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <button class="btn btn-outline-secondary w-100" onclick="limpiarFiltrosEquipos()">
+                                    <i class="bi bi-x-circle me-1"></i> Limpiar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card card-custom shadow-sm">
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0 text-nowrap">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>Serie / Código</th>
+                                        <th>Tipo</th>
+                                        <th>Marca y Modelo</th>
+                                        <th>Departamento Asignado</th>
+                                        <th>Descripción de Falla</th>
+                                        <th>Estado</th>
+                                        <th class="text-center">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tabla-equipos-body"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ========================================== -->
+            <!-- MÓDULO 3: GESTIÓN DE DEPARTAMENTOS         -->
+            <!-- (SOLO Administrador)                       -->
+            <!-- ========================================== -->
+            <section id="seccion-departamentos" class="modulo-seccion d-none admin-only">
+                <div class="card card-custom shadow-sm mb-4">
+                    <div class="card-body">
+                        <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
+                            <div>
+                                <h3 class="fw-bold mb-1 text-dark">
+                                    <i class="bi bi-buildings text-info me-2"></i>Gestión de Departamentos
+                                </h3>
+                                <p class="text-muted mb-0 small">Catálogo institucional que alimenta la asignación de novedades y equipos.</p>
+                            </div>
+                            <button class="btn btn-primary fw-semibold" onclick="DepartamentoController.abrirModal()">
+                                <i class="bi bi-plus-circle me-1"></i> Nuevo Departamento
+                            </button>
+                        </div>
+
+                        <div class="row g-2 mt-3 pt-3 border-top">
+                            <div class="col-md-8">
+                                <div class="input-group">
+                                    <span class="input-group-text bg-white"><i class="bi bi-search"></i></span>
+                                    <input type="text" id="filtro-deptos-texto" class="form-control" placeholder="Buscar departamento por nombre...">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <button class="btn btn-outline-secondary w-100" onclick="limpiarFiltrosDepartamentos()">
+                                    <i class="bi bi-x-circle me-1"></i> Limpiar Búsqueda
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card card-custom shadow-sm">
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th style="width: 70px;">#</th>
+                                        <th>Nombre del Departamento</th>
+                                        <th>Novedades Activas</th>
+                                        <th>Total Novedades</th>
+                                        <th>Equipos Vinculados</th>
+                                        <th class="text-center" style="width: 140px;">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tabla-departamentos-body"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ========================================== -->
+            <!-- MÓDULO 4: GESTIÓN DE USUARIOS Y CLAVES     -->
+            <!-- (SOLO Administrador)                       -->
+            <!-- ========================================== -->
+            <section id="seccion-usuarios" class="modulo-seccion d-none admin-only">
+                <div class="card card-custom shadow-sm mb-4">
+                    <div class="card-body">
+                        <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
+                            <div>
+                                <h3 class="fw-bold mb-1 text-dark">
+                                    <i class="bi bi-people text-primary me-2"></i>Gestión de Usuarios y Claves
+                                </h3>
+                                <p class="text-muted mb-0 small">Administración de credenciales, roles autorizados y reseteo forzado de contraseñas.</p>
+                            </div>
+                            <button class="btn btn-info text-white fw-semibold" onclick="UsuarioController.abrirModal()">
+                                <i class="bi bi-person-plus-fill me-1"></i> Registrar Usuario
+                            </button>
+                        </div>
+
+                        <div class="row g-2 mt-3 pt-3 border-top">
+                            <div class="col-md-5">
+                                <div class="input-group">
+                                    <span class="input-group-text bg-white"><i class="bi bi-search"></i></span>
+                                    <input type="text" id="filtro-usuarios-texto" class="form-control" placeholder="Buscar por Cédula, Usuario, Nombre o Correo...">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <select id="filtro-usuarios-rol" class="form-select">
+                                    <option value="">Todos los Roles</option>
+                                    <option value="Administrador">Administrador</option>
+                                    <option value="Soporte">Soporte</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <button class="btn btn-outline-secondary w-100" onclick="limpiarFiltrosUsuarios()">
+                                    <i class="bi bi-x-circle me-1"></i> Limpiar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card card-custom shadow-sm">
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0 text-nowrap">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>Cédula</th>
+                                        <th>Nombre Completo</th>
+                                        <th>Usuario</th>
+                                        <th>Correo Electrónico</th>
+                                        <th>Rol</th>
+                                        <th>Estado</th>
+                                        <th class="text-center" style="min-width: 220px;">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tabla-usuarios-body"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- MODALES DEL SISTEMA                        -->
+    <!-- ========================================== -->
+
+    <!-- MODAL: RECUPERAR CONTRASEÑA EN LOGIN -->
+    <div class="modal fade" id="modalRecuperarLogin" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form id="form-recuperar-login">
+                    <div class="modal-header bg-primary text-white">
+                        <h5 class="modal-title"><i class="bi bi-key-fill me-1"></i> Restablecer Contraseña</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <!-- Alerta de feedback para errores o confirmación -->
+                        <div id="alerta-recuperar-error" class="alert alert-danger d-none py-2 small" role="alert">
+                            <i class="bi bi-exclamation-octagon-fill me-1"></i> <span id="alerta-recuperar-texto">El correo electrónico no está registrado.</span>
+                        </div>
+                        <div id="alerta-recuperar-exito" class="alert alert-success d-none py-2 small" role="alert">
+                            <i class="bi bi-check-circle-fill me-1"></i> <span id="alerta-recuperar-exito-texto">Instrucciones enviadas exitosamente.</span>
+                        </div>
+
+                        <p class="text-muted small mb-3">Ingresa el correo electrónico institucional asociado a tu cuenta para verificar y enviar el código de restablecimiento.</p>
+                        <div class="mb-3">
+                            <label for="recuperar-email" class="form-label fw-semibold">Correo Electrónico <span class="text-danger">*</span></label>
+                            <input type="email" class="form-control" id="recuperar-email" required placeholder="tu.correo@institucion.edu">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary fw-semibold"><i class="bi bi-send-fill me-1"></i> Enviar Enlace / Código</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: CAMBIAR CONTRASEÑA PROPIA (USUARIO LOGUEADO) -->
+    <div class="modal fade" id="modalCambiarPasswordPropia" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form id="form-cambiar-password-propia">
+                    <div class="modal-header bg-warning text-dark">
+                        <h5 class="modal-title"><i class="bi bi-shield-lock me-1"></i> Cambiar mi Contraseña</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="pwd-actual" class="form-label fw-semibold">Contraseña Actual <span class="text-danger">*</span></label>
+                            <input type="password" class="form-control" id="pwd-actual" required placeholder="••••••••">
+                        </div>
+                        <div class="mb-3">
+                            <label for="pwd-nueva" class="form-label fw-semibold">Nueva Contraseña <span class="text-danger">*</span></label>
+                            <input type="password" class="form-control" id="pwd-nueva" required placeholder="••••••••">
+                        </div>
+                        <div class="mb-3">
+                            <label for="pwd-confirmar" class="form-label fw-semibold">Confirmar Nueva Contraseña <span class="text-danger">*</span></label>
+                            <input type="password" class="form-control" id="pwd-confirmar" required placeholder="••••••••">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-warning text-dark fw-semibold"><i class="bi bi-check-lg me-1"></i> Actualizar Contraseña</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: DEPARTAMENTO -->
+    <div class="modal fade" id="modalDepartamento" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form id="form-departamento">
+                    <div class="modal-header bg-primary text-white">
+                        <h5 class="modal-title" id="modalDepartamentoLabel"><i class="bi bi-building-add me-1"></i> Nuevo Departamento</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" id="depto-edit-id">
+                        <div class="mb-3">
+                            <label for="depto-nombre" class="form-label fw-semibold">Nombre del Departamento <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="depto-nombre" required placeholder="Ej: Coordinación FASSS">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary fw-semibold"><i class="bi bi-save me-1"></i> Guardar Departamento</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: USUARIO -->
+    <div class="modal fade" id="modalUsuario" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <form id="form-usuario">
+                    <div class="modal-header bg-info text-white">
+                        <h5 class="modal-title" id="modalUsuarioLabel"><i class="bi bi-person-circle me-1"></i> Registrar Usuario</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" id="usuario-edit-id">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="usuario-cedula" class="form-label fw-semibold">ID / Cédula <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="usuario-cedula" required placeholder="Ej: 0912345678">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="usuario-username" class="form-label fw-semibold">Usuario de Acceso <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control font-monospace" id="usuario-username" required placeholder="Ej: jrodriguez">
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="usuario-nombre" class="form-label fw-semibold">Nombre Completo <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="usuario-nombre" required placeholder="Ej: Jessica Rodríguez">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="usuario-email" class="form-label fw-semibold">Correo Electrónico <span class="text-danger">*</span></label>
+                                <input type="email" class="form-control" id="usuario-email" required placeholder="Ej: jessica.rodriguez@institucion.edu">
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label for="usuario-password" class="form-label fw-semibold">Contraseña Inicial <span class="text-danger" id="usuario-pwd-req">*</span></label>
+                                <input type="password" class="form-control" id="usuario-password" placeholder="••••••••">
+                                <div class="form-text small" id="usuario-pwd-help">Requerida para nuevos usuarios.</div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="usuario-rol" class="form-label fw-semibold">Rol <span class="text-danger">*</span></label>
+                                <select class="form-select fw-semibold" id="usuario-rol" required>
+                                    <option value="Soporte">Soporte</option>
+                                    <option value="Administrador">Administrador</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="usuario-estado" class="form-label fw-semibold">Estado <span class="text-danger">*</span></label>
+                                <select class="form-select" id="usuario-estado" required>
+                                    <option value="Activo">Activo</option>
+                                    <option value="Inactivo">Inactivo</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-info text-white fw-semibold"><i class="bi bi-save me-1"></i> Guardar Usuario</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: NOVEDAD -->
+    <div class="modal fade" id="modalNovedad" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <form id="form-novedad">
+                    <div class="modal-header bg-warning text-dark">
+                        <h5 class="modal-title" id="modalNovedadLabel"><i class="bi bi-ticket-perforated me-1"></i> Nueva Novedad</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" id="novedad-edit-id">
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label for="novedad-codigo" class="form-label fw-semibold">Código</label>
+                                <input type="text" class="form-control bg-light fw-bold font-monospace" id="novedad-codigo" readonly placeholder="Auto-generado">
+                            </div>
+                            <div class="col-md-8 mb-3">
+                                <label for="novedad-titulo" class="form-label fw-semibold">Título de la Novedad <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="novedad-titulo" required placeholder="Ej: Impresora no detecta cartucho de tóner">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="novedad-descripcion" class="form-label fw-semibold">Descripción Detallada <span class="text-danger">*</span></label>
+                            <textarea class="form-control" id="novedad-descripcion" rows="3" required placeholder="Describe la falla reportada..."></textarea>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label for="novedad-departamento" class="form-label fw-semibold">Departamento Afectado <span class="text-danger">*</span></label>
+                                <select class="form-select" id="novedad-departamento" required>
+                                    <option value="">Seleccione departamento...</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="novedad-reportante" class="form-label fw-semibold">Usuario Reportante <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="novedad-reportante" required placeholder="Nombre de quien reporta">
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="novedad-tecnico" class="form-label fw-semibold">Técnico Asignado <span class="text-danger">*</span></label>
+                                <select class="form-select" id="novedad-tecnico" required>
+                                    <option value="">Seleccione técnico...</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label for="novedad-fecha-apertura" class="form-label fw-semibold">Apertura (Fecha y Hora) <span class="text-danger">*</span></label>
+                                <input type="datetime-local" class="form-control" id="novedad-fecha-apertura" required>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="novedad-fecha-resolucion" class="form-label fw-semibold">Resolución (Fecha y Hora)</label>
+                                <input type="datetime-local" class="form-control" id="novedad-fecha-resolucion">
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="novedad-estado" class="form-label fw-semibold">Estado <span class="text-danger">*</span></label>
+                                <select class="form-select fw-bold" id="novedad-estado" required>
+                                    <option value="Pendiente">Pendiente</option>
+                                    <option value="En revisión">En revisión</option>
+                                    <option value="Finalizado">Finalizado</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-warning text-dark fw-semibold"><i class="bi bi-save me-1"></i> Guardar Novedad</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: EQUIPO -->
+    <div class="modal fade" id="modalEquipo" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <form id="form-equipo">
+                    <div class="modal-header bg-success text-white">
+                        <h5 class="modal-title" id="modalEquipoLabel"><i class="bi bi-pc me-1"></i> Registrar Equipo con Problemas</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" id="equipo-edit-id">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="equipo-serie" class="form-label fw-semibold">Serie / Código <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control font-monospace" id="equipo-serie" required placeholder="Ej: SN-DELL-8829">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="equipo-tipo" class="form-label fw-semibold">Tipo <span class="text-danger">*</span></label>
+                                <select class="form-select" id="equipo-tipo" required>
+                                    <option value="Laptop">Laptop</option>
+                                    <option value="Desktop">Desktop</option>
+                                    <option value="Impresora">Impresora</option>
+                                    <option value="Servidor">Servidor</option>
+                                    <option value="Switch/Router">Switch/Router</option>
+                                    <option value="Otro">Otro</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="equipo-marca-modelo" class="form-label fw-semibold">Marca / Modelo <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="equipo-marca-modelo" required placeholder="Ej: Lenovo ThinkPad L14">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="equipo-departamento" class="form-label fw-semibold">Departamento Asignado <span class="text-danger">*</span></label>
+                                <select class="form-select" id="equipo-departamento" required>
+                                    <option value="">Seleccione departamento...</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="equipo-falla" class="form-label fw-semibold">Descripción de la Falla <span class="text-danger">*</span></label>
+                            <textarea class="form-control" id="equipo-falla" rows="3" required placeholder="Detalla la avería..."></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="equipo-estado" class="form-label fw-semibold">Estado del Equipo <span class="text-danger">*</span></label>
+                            <select class="form-select" id="equipo-estado" required>
+                                <option value="En taller">En taller</option>
+                                <option value="Reemplazado">Reemplazado</option>
+                                <option value="Operativo">Operativo</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-success fw-semibold"><i class="bi bi-save me-1"></i> Guardar Equipo</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 Bundle JS (incluye Popper) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <!-- SheetJS (XLSX) CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
+    <!-- SCRIPTS MODULARES -->
+    <script src="js/storage.js"></script>
+    <script src="js/departamentos.js"></script>
+    <script src="js/usuarios.js"></script>
+    <script src="js/novedades.js"></script>
+    <script src="js/equipos.js"></script>
+    <script src="js/excel.js"></script>
+    <script src="js/auth.js"></script>
+
+    <!-- Inicialización de la Aplicación -->
+    <script>
+        function limpiarFiltrosNovedades() {
+            document.getElementById('filtro-novedades-texto').value = '';
+            document.getElementById('filtro-novedades-depto').value = '';
+            document.getElementById('filtro-novedades-estado').value = '';
+            NovedadController.renderizar();
+        }
+
+        function limpiarFiltrosEquipos() {
+            document.getElementById('filtro-equipos-texto').value = '';
+            document.getElementById('filtro-equipos-depto').value = '';
+            document.getElementById('filtro-equipos-estado').value = '';
+            EquipoController.renderizar();
+        }
+
+        function limpiarFiltrosDepartamentos() {
+            document.getElementById('filtro-deptos-texto').value = '';
+            DepartamentoController.renderizar();
+        }
+
+        function limpiarFiltrosUsuarios() {
+            document.getElementById('filtro-usuarios-texto').value = '';
+            document.getElementById('filtro-usuarios-rol').value = '';
+            UsuarioController.renderizar();
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            StorageService.inicializarDatos();
+            inicializarNavegacion();
+            DepartamentoController.init();
+            UsuarioController.init();
+            NovedadController.init();
+            EquipoController.init();
+            AuthController.init();
+        });
+    </script>
+</body>
+</html>

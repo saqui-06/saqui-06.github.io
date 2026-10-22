@@ -1,0 +1,239 @@
+/* ========================================================
+   CONTROL NOVEDADES - ESTILOS DEL PANEL HORIZONTAL SUPERIOR
+   ======================================================== */
+
+:root {
+    --navbar-bg: #1e293b;           /* Slate oscuro moderno */
+    --navbar-border: #334155;
+    --nav-btn-hover: rgba(255, 255, 255, 0.08);
+    --nav-btn-active: #0d6efd;       /* Azul primario Bootstrap */
+    --user-pill-bg: #0f172a;        /* Fondo oscuro para perfil */
+    --body-bg: #f8fafc;
+}
+
+body {
+    min-height: 100vh;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background-color: var(--body-bg) !important;
+}
+
+/* ----------------------------------------------------
+   1. NAVBAR SUPERIOR HORIZONTAL
+   ---------------------------------------------------- */
+.navbar-top-panel {
+    background-color: var(--navbar-bg) !important;
+    border-bottom: 1px solid var(--navbar-border);
+    padding-top: 0.55rem;
+    padding-bottom: 0.55rem;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+}
+
+/* Lado Izquierdo: Brand / Logo */
+.brand-container {
+    text-decoration: none;
+    color: #ffffff;
+    transition: opacity 0.2s ease;
+}
+
+.brand-container:hover {
+    opacity: 0.95;
+    color: #ffffff;
+}
+
+.brand-icon-box {
+    width: 38px;
+    height: 38px;
+    background: linear-gradient(135deg, #0d6efd, #0284c7);
+    color: #ffffff;
+    border-radius: 9px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    box-shadow: 0 2px 6px rgba(13, 110, 253, 0.35);
+}
+
+.brand-text {
+    font-size: 1.22rem;
+    font-weight: 700;
+    letter-spacing: -0.2px;
+    line-height: 1.2;
+    color: #f8fafc;
+}
+
+/* ----------------------------------------------------
+   2. CENTRO: BOTONES DE NAVEGACIÓN HORIZONTAL LIMPIA
+   ---------------------------------------------------- */
+.nav-modules-group {
+    background-color: transparent;
+    padding: 0;
+    border-radius: 0;
+    border: none;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.nav-module-btn {
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background-color: rgba(255, 255, 255, 0.04);
+    color: #e2e8f0;
+    font-weight: 600;
+    font-size: 0.9rem;
+    padding: 0.55rem 1.25rem;
+    border-radius: 8px;
+    transition: all 0.2s ease-in-out;
+    display: inline-flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.5rem;
+    white-space: nowrap;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.nav-module-btn:hover {
+    color: #ffffff;
+    background-color: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 255, 255, 0.25);
+    transform: translateY(-1px);
+}
+
+/* Estado activo: fondo azul redondeado moderno */
+.nav-module-btn.active {
+    background-color: #0d6efd !important;
+    border-color: #0d6efd !important;
+    color: #ffffff !important;
+    box-shadow: 0 4px 14px rgba(13, 110, 253, 0.45);
+}
+
+.nav-module-btn i {
+    font-size: 1.05rem;
+}
+
+/* ----------------------------------------------------
+   3. LADO DERECHO: EXPORTAR A EXCEL Y PERFIL
+   ---------------------------------------------------- */
+.btn-export-excel {
+    font-size: 0.88rem;
+    font-weight: 600;
+    padding: 0.45rem 1rem;
+    border-radius: 50rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    box-shadow: 0 2px 8px rgba(25, 135, 84, 0.3);
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.btn-export-excel:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(25, 135, 84, 0.4);
+}
+
+/* Píldora de Usuario Activo en Esquina Superior Derecha */
+.user-profile-badge {
+    background-color: var(--user-pill-bg);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: #f1f5f9;
+    border-radius: 50rem;
+    padding: 0.38rem 0.95rem;
+    font-size: 0.84rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    transition: all 0.2s ease;
+}
+
+.user-profile-badge:hover,
+.user-profile-badge:focus {
+    background-color: #0b1120;
+    color: #ffffff;
+    border-color: rgba(255, 255, 255, 0.25);
+}
+
+.user-role-tag {
+    font-size: 0.7rem;
+    padding: 0.2rem 0.5rem;
+    border-radius: 50rem;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+}
+
+/* ----------------------------------------------------
+   4. TABLAS, MODALES Y TRANSICIONES
+   ---------------------------------------------------- */
+.modulo-seccion {
+    animation: fadeInSection 0.22s ease-out;
+}
+
+@keyframes fadeInSection {
+    from {
+        opacity: 0;
+        transform: translateY(4px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.card-custom {
+    border-radius: 12px;
+    border: none;
+    background: #ffffff;
+}
+
+.table th {
+    font-size: 0.76rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    padding-top: 13px;
+    padding-bottom: 13px;
+}
+
+.table td {
+    font-size: 0.88rem;
+    vertical-align: middle;
+}
+
+/* Badges dinámicos de estado en tabla */
+.select-estado-tabla {
+    font-size: 0.82rem;
+    font-weight: 600;
+    padding: 0.24rem 0.55rem;
+    border-radius: 20px;
+    cursor: pointer;
+}
+
+.select-estado-tabla.estado-pendiente {
+    background-color: #fef3c7;
+    color: #92400e;
+    border-color: #fde68a;
+}
+
+.select-estado-tabla.estado-revision {
+    background-color: #e0f2fe;
+    color: #0369a1;
+    border-color: #bae6fd;
+}
+
+.select-estado-tabla.estado-finalizado {
+    background-color: #dcfce7;
+    color: #166534;
+    border-color: #bbf7d0;
+}
+
+/* Vista de Login */
+.bg-gradient-login {
+    background: radial-gradient(circle at 15% 20%, #1e293b 0%, #0f172a 100%);
+}
+
+.card-login {
+    border-radius: 18px;
+    background-color: #ffffff;
+}
